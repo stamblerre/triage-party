@@ -1,0 +1,150 @@
+# Copyright 2020 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+settings:
+  name: gopls
+  min_similarity: 0.8
+  repos:
+    - https://github.com/golang/go
+
+  # Who should automatically be considered a project member?
+  # See: https://developer.github.com/v4/enum/commentauthorassociation/
+  # Default is "collaborator, owner, member", unless "members" is set
+  #
+  #member-roles:
+  # - collaborator
+  # - owner
+  # - member
+  # Who else do we consider to be a project member? Default is empty.
+  #members:
+  # - tstromberg
+
+collections:
+  - id: daily
+    name: Daily Triage
+    dedup: true
+    description: >
+      queue to be emptied once a day
+    rules:
+      - issue-needs-attention
+      - issue-gopls-waiting-for-info
+  
+  - id: next-release
+    name: Next release
+    dedup: true
+    description: >
+      issues that must be resolved for the next gopls release
+    rules:
+      - issue-in-next-gopls-release
+
+  - id: v1.0.0
+    name: gopls/v1.0.0
+    dedup: true
+    description: >
+      issues that must be resolved for gopls v1.0.0
+    rules:
+      - issue-in-gopls1-milestone
+
+  - id: workspace-module
+    name: Workspace Module
+    dedup: true
+    description: >
+      issues that must be resolved for workspace modules
+    rules:
+      - issue-in-workspace-module-milestone
+
+  - id: unplanned
+    name: Unplanned
+    dedup: true
+    description: >
+      unplanned work
+    rules:
+      - issue-in-unplanned-milestone
+
+  - id: feature-requests
+    name: Feature Requests
+    dedup: true
+    description: >
+      features requests
+    rules:
+      - issue-gopls-fr
+
+  - id: testing
+    name: Testing
+    dedup: true
+    description: >
+      testing work
+    rules:
+      - issue-gopls-testing
+
+rules:
+  issue-needs-attention:
+    name: "Untriaged issues"
+    resolution: "Add to milestone"
+    type: issue
+    filters:
+      - label: "gopls"
+      - milestone: "Unreleased"
+  
+  issue-gopls-waiting-for-info:
+    name: "Unactionable gopls issues"
+    resolution: "None"
+    type: issue
+    filters:
+      - label: "gopls"
+      - label: "WaitingForInfo"
+
+  issue-in-next-gopls-release:
+    name: "Issues in the next release"
+    resolution: "None"
+    type: issue
+    filters:
+      - milestone: "gopls/v0.*"
+
+  issue-in-gopls1-milestone:
+    name: "Issues in the v1.0.0 milestone"
+    resolution: "None"
+    type: issue
+    filters:
+      - milestone: "gopls/v1.0.0"
+
+  issue-in-workspace-module-milestone:
+    name: "Issues in the workspace module milestone"
+    resolution: "None"
+    type: issue
+    filters:
+      - milestone: "gopls/workspace-module"
+
+  issue-in-unplanned-milestone:
+    name: "Issues in the unplanned milestone"
+    resolution: "None"
+    type: issue
+    filters:
+      - milestone: "gopls/unplanned"
+
+  issue-gopls-fr:
+    name: "gopls feature requests"
+    resolution: "None"
+    type: issue
+    filters:
+      - label: "gopls"
+      - label: "FeatureRequest"
+
+  issue-gopls-testing:
+    name: "gopls testing issue"
+    resolution: "None"
+    type: issue
+    filters:
+      - label: "gopls"
+      - label: "Testing"
