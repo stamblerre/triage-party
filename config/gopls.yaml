@@ -38,6 +38,7 @@ collections:
       queue to be emptied once a day
     rules:
       - issue-needs-attention
+      - issue-needs-response
       - issue-gopls-waiting-for-info
   
   - id: next-release
@@ -54,15 +55,8 @@ collections:
     description: >
       issues that must be resolved for gopls v1.0.0
     rules:
+      - assigned-issue-in-gopls1
       - issue-in-gopls1-milestone
-
-  - id: workspace-module
-    name: Workspace Module
-    dedup: true
-    description: >
-      issues that must be resolved for workspace modules
-    rules:
-      - issue-in-workspace-module-milestone
 
   - id: unplanned
     name: Unplanned
@@ -96,6 +90,17 @@ rules:
     filters:
       - label: "gopls"
       - milestone: "Unreleased"
+
+  issue-needs-response:
+    name: "Needs response"
+    resolution: "Add to milestone"
+    type: issue
+    filters:
+      - label: "gopls"
+      - label: "WaitingForInfo"
+      - tag: author-last
+      - tag: recv
+      - tag: recv-q
   
   issue-gopls-waiting-for-info:
     name: "Unactionable gopls issues"
@@ -118,13 +123,15 @@ rules:
     type: issue
     filters:
       - milestone: "gopls/v1.0.0"
+      - tag: "!assigned"
 
-  issue-in-workspace-module-milestone:
-    name: "Issues in the workspace module milestone"
+  assigned-issue-in-gopls1:
+    name: "Assigned issues in the v1.0.0 milestone"
     resolution: "None"
     type: issue
     filters:
-      - milestone: "gopls/workspace-module"
+      - milestone: "gopls/v1.0.0"
+      - tag: "assigned"
 
   issue-in-unplanned-milestone:
     name: "Issues in the unplanned milestone"
