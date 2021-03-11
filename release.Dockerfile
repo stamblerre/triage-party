@@ -17,7 +17,7 @@
 #
 # Party on!
 
-FROM golang:1.15.2-buster AS builder
+FROM golang:latest AS builder
 WORKDIR /app
 
 # Build the binary
@@ -32,7 +32,6 @@ RUN go mod download
 RUN go build cmd/server/main.go
 
 # Setup the site data
-# hadolint ignore=DL3007
 FROM gcr.io/distroless/base:latest
 COPY --from=builder /src/tparty/main /app/
 COPY site /app/site/
