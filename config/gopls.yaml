@@ -37,12 +37,20 @@ collections:
     description: >
       queue to be emptied once a day
     rules:
-      - issue-needs-attention
       - issue-needs-response
+      - issue-needs-attention
       - issue-gopls-waiting-for-info
-  
+
+  - id: triage-recap
+    name: Triage Recap
+    dedup: true
+    description: >
+      Issues from the last week
+    rules:
+      - issue-updated-last-7days
+
   - id: next-release
-    name: Next release
+    name: Next Release
     dedup: true
     description: >
       issues that must be resolved for the next gopls release
@@ -109,6 +117,14 @@ rules:
     filters:
       - label: "gopls"
       - label: "WaitingForInfo"
+
+  issue-updated-last-7days:
+    name: "Issues touched in the last 7 days"
+    resolution: "None"
+    type: issue
+    filters:
+      - label: "gopls"
+      - updated: -7d
 
   issue-in-next-gopls-release:
     name: "Issues in the next release"
