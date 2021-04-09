@@ -37,8 +37,10 @@ collections:
     description: >
       queue to be emptied once a day
     rules:
+      - issue-needs-attention
       - issue-needs-response
       - issue-waiting-for-info
+      - issue-debug-needs-attention
   
   - id: triage-recap
     name: Triage Recap
@@ -49,6 +51,14 @@ collections:
       - issue-updated-last-7days
 
 rules:
+
+  issue-needs-attention:
+    name: "Untriaged issues"
+    resolution: "Add to milestone"
+    type: issue
+    filters:
+      - milestone: "Untriaged"
+      - label: "!Debug"
 
   issue-needs-response:
     name: "Needs response"
@@ -73,3 +83,11 @@ rules:
     type: issue
     filters:
       - updated: -7d
+
+  issue-debug-needs-attention:
+    name: "Untriaged debug issues"
+    resolution: "Add to milestone"
+    type: issue
+    filters:
+      - milestone: "Untriaged"
+      - label: "Debug"
