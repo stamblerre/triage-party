@@ -98,6 +98,7 @@ rules:
     filters:
       - label: "gopls"
       - milestone: "Unreleased"
+      - tag: "!assigned"
 
   issue-needs-response:
     name: "Needs response"
