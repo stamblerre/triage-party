@@ -37,10 +37,10 @@ collections:
     description: >
       queue to be emptied once a day
     rules:
-      - issue-needs-attention
+      - issue-needs-triage
       - issue-needs-response
-      - issue-waiting-for-info
       - issue-new-comment
+      - issue-unactionable
 
   - id: triage-recap
     name: Triage Recap
@@ -93,7 +93,7 @@ collections:
 
 rules:
 
-  issue-needs-attention:
+  issue-needs-triage:
     name: "Untriaged issues"
     resolution: "Add to milestone"
     type: issue
@@ -111,7 +111,7 @@ rules:
       - tag: (recv|recv-q)
       - tag: "!contributor-last"
   
-  issue-waiting-for-info:
+  issue-unactionable:
     name: "Unactionable issues"
     resolution: "None"
     type: issue
