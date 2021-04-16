@@ -37,9 +37,10 @@ collections:
     description: >
       queue to be emptied once a day
     rules:
-      - issue-needs-response
       - issue-needs-attention
-      - issue-gopls-waiting-for-info
+      - issue-needs-response
+      - issue-waiting-for-info
+      - issue-new-comment
 
   - id: triage-recap
     name: Triage Recap
@@ -91,33 +92,46 @@ collections:
       - issue-gopls-testing
 
 rules:
+
   issue-needs-attention:
     name: "Untriaged issues"
     resolution: "Add to milestone"
     type: issue
     filters:
-      - label: "gopls"
       - milestone: "Unreleased"
-      - tag: "!assigned"
+      - label: "gopls"
 
   issue-needs-response:
     name: "Needs response"
-    resolution: "Add to milestone"
+    resolution: "Respond"
     type: issue
     filters:
-      - label: "gopls"
       - label: "WaitingForInfo"
-      - tag: author-last
-      - tag: recv
-      - tag: recv-q
+      - label: "gopls"
+      - tag: (recv|recv-q)
+      - tag: "!contributor-last"
   
-  issue-gopls-waiting-for-info:
-    name: "Unactionable gopls issues"
+  issue-waiting-for-info:
+    name: "Unactionable issues"
     resolution: "None"
     type: issue
     filters:
-      - label: "gopls"
       - label: "WaitingForInfo"
+      - label: "gopls"
+      - tag: "contributor-last"
+
+  issue-new-comment:
+    name: "Issue with a new comment"
+    resolution: "Respond"
+    type: issue
+    filters:
+      - label: "gopls"
+      - label: "!WaitingForInfo"
+      - tag: (recv|recv-q)
+      - tag: "!contributor-last"
+      - tag: "!assigned"
+      - comments: ">1"
+      - updated: -7d
 
   issue-updated-last-7days:
     name: "Issues touched in the last 7 days"

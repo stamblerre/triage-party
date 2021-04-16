@@ -32,7 +32,7 @@ settings:
 
 collections:
   - id: daily
-    name: Triage
+    name: Debug Triage
     dedup: true
     rules:
       - issue-needs-attention
@@ -41,7 +41,7 @@ collections:
       - issue-new-comment
 
   - id: triage-recap
-    name: Triage Recap
+    name: Debug Triage Recap
     dedup: true
     description: >
       Issues from the last week
@@ -56,7 +56,7 @@ rules:
     type: issue
     filters:
       - milestone: "Untriaged"
-      - label: "!Debug"
+      - label: "Debug"
 
   issue-needs-response:
     name: "Needs response"
@@ -64,7 +64,7 @@ rules:
     type: issue
     filters:
       - label: "WaitingForInfo"
-      - label: "!Debug"
+      - label: "Debug"
       - tag: (recv|recv-q)
       - tag: "!contributor-last"
   
@@ -74,7 +74,7 @@ rules:
     type: issue
     filters:
       - label: "WaitingForInfo"
-      - label: "!Debug"
+      - label: "Debug"
       - tag: "contributor-last"
 
   issue-new-comment:
@@ -82,7 +82,7 @@ rules:
     resolution: "Respond"
     type: issue
     filters:
-      - label: "!Debug"
+      - label: "Debug"
       - label: "!WaitingForInfo"
       - updated: -7d
       - tag: (recv|recv-q)
@@ -97,4 +97,4 @@ rules:
     type: issue
     filters:
       - updated: -7d
-      - label: "!Debug"
+      - label: "Debug"
