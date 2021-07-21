@@ -34,11 +34,24 @@ collections:
   - id: daily
     name: Triage
     dedup: true
+    description: >
+      queue to be emptied once a day
     rules:
       - issue-needs-triage
       - issue-needs-response
       - issue-new-comment
       - issue-unactionable
+
+  - id: debug daily
+    name: Debug
+    dedup: true
+    description: >
+      debug-related issues, queue to be emptied once a day
+    rules:
+      - issue-debug-needs-triage
+      - issue-debug-needs-response
+      - issue-debug-new-comment
+      - issue-debug-unactionable
 
   - id: triage-recap
     name: Triage Recap
@@ -47,6 +60,7 @@ collections:
       Issues from the last week
     rules:
       - issue-updated-last-7days
+      - issue-debug-updated-last-7days
 
   - id: feature-requests
     name: Feature Requests
@@ -55,20 +69,31 @@ collections:
       features requests
     rules:
       - issue-fr
+      - issue-debug-fr
 
 rules:
 
   issue-needs-triage:
     name: "Untriaged issues"
-    resolution: "Add to milestone"
+    resolution: "Add to milestone or label (WaitingForInfo or Debug)"
     type: issue
     filters:
       - milestone: "Untriaged"
       - label: "!Debug"
+      - label: "!WaitingForInfo"
+
+  issue-debug-needs-triage:
+    name: "Untriaged issues (debug)"
+    resolution: "Add to milestone"
+    type: issue
+    filters:
+      - milestone: "Untriaged"
+      - label: "Debug"
+      - label: "!WaitingForInfo"
 
   issue-needs-response:
     name: "Needs response"
-    resolution: "Respond"
+    resolution: "Respond. For retriage, remove 'WaitingForInfo' label."
     type: issue
     filters:
       - label: "WaitingForInfo"
@@ -76,8 +101,27 @@ rules:
       - tag: (recv|recv-q)
       - tag: "!contributor-last"
   
+  issue-debug-needs-response:
+    name: "Needs response (debug)"
+    resolution: "Respond. For retriage, remove 'WaitingForInfo' label."
+    type: issue
+    filters:
+      - label: "WaitingForInfo"
+      - label: "Debug"
+      - tag: (recv|recv-q)
+      - tag: "!contributor-last"
+
   issue-unactionable:
     name: "Unactionable issues"
+    resolution: "None"
+    type: issue
+    filters:
+      - label: "WaitingForInfo"
+      - label: "!Debug"
+      - tag: "contributor-last"
+
+  issue-debug-unactionable:
+    name: "Unactionable issues (debug)"
     resolution: "None"
     type: issue
     filters:
@@ -99,6 +143,20 @@ rules:
       - comments: ">1"
       - updated: -7d
 
+  issue-debug-new-comment:
+    name: "Issue with a new comment (debug)"
+    resolution: "Respond"
+    type: issue
+    filters:
+      - label: "Debug"
+      - label: "!WaitingForInfo"
+      - updated: -7d
+      - tag: (recv|recv-q)
+      - tag: "!contributor-last"
+      - tag: "!assigned"
+      - comments: ">1"
+      - updated: -7d
+
   issue-updated-last-7days:
     name: "Issues touched in the last 7 days"
     resolution: "None"
@@ -107,10 +165,26 @@ rules:
       - updated: -7d
       - label: "!Debug"
 
+  issue-debug-updated-last-7days:
+    name: "Issues touched in the last 7 days (debug)"
+    resolution: "None"
+    type: issue
+    filters:
+      - updated: -7d
+      - label: "Debug"
+
   issue-fr:
     name: "VS Code feature requests"
     resolution: "None"
     type: issue
     filters:
       - label: "!Debug"
+      - label: "FeatureRequest"
+
+  issue-debug-fr:
+    name: "VS Code feature requests (debug)"
+    resolution: "None"
+    type: issue
+    filters:
+      - label: "Debug"
       - label: "FeatureRequest"
