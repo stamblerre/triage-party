@@ -95,15 +95,16 @@ rules:
 
   issue-needs-triage:
     name: "Untriaged issues"
-    resolution: "Add to milestone"
+    resolution: "Add to milestone or add 'WaitingForInfo' label."
     type: issue
     filters:
       - milestone: "Unreleased"
       - label: "gopls"
+      - label: "!WaitingForInfo"
 
   issue-needs-response:
     name: "Needs response"
-    resolution: "Respond"
+    resolution: "Respond. For retriage, remove 'WaitingForInfo' label and move to 'Unreleased' milestone."
     type: issue
     filters:
       - label: "WaitingForInfo"
