@@ -52,6 +52,7 @@ collections:
       Issues from the last week
     rules:
       - issue-updated-last-7days
+      - debug-issue-updated-last-7days
       - issue-zombies
       - issue-stale-needs-info
 
@@ -62,6 +63,7 @@ collections:
       features requests
     rules:
       - issue-fr
+      - debug-issue-fr
 
 rules:
 
@@ -108,6 +110,15 @@ rules:
     type: issue
     filters:
       - updated: -7d
+      - label: "!Debug"
+
+  debug-issue-updated-last-7days:
+    name: "Debug issues touched in the last 7 days"
+    resolution: "None"
+    type: issue
+    filters:
+      - updated: -7d
+      - label: "Debug"
 
   issue-fr:
     name: "VS Code feature requests"
@@ -115,6 +126,15 @@ rules:
     type: issue
     filters:
       - label: "FeatureRequest"
+      - label: "!Debug"
+
+  debug-issue-fr:
+    name: "VS Code feature requests"
+    resolution: "None"
+    type: issue
+    filters:
+      - label: "FeatureRequest"
+      - label: "Debug"
 
   issue-zombies:
     name: "Screaming into the void"
