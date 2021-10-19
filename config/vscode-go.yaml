@@ -17,6 +17,9 @@ settings:
   min_similarity: 0.8
   repos:
     - https://github.com/golang/vscode-go
+  
+  # TODO(hyangah): who are the 'collaborators'?
+  # Can we use a team?
 
   # Who should automatically be considered a project member?
   # See: https://developer.github.com/v4/enum/commentauthorassociation/
@@ -41,18 +44,7 @@ collections:
       - issue-needs-response
       - issue-new-comment
       - issue-unactionable
-
-  - id: debug daily
-    name: Debug
-    dedup: true
-    description: >
-      debug-related issues, queue to be emptied once a day
-    rules:
-      - issue-debug-needs-triage
-      - issue-debug-needs-response
-      - issue-debug-new-comment
-      - issue-debug-unactionable
-
+      
   - id: triage-recap
     name: Triage Recap
     dedup: true
@@ -60,7 +52,9 @@ collections:
       Issues from the last week
     rules:
       - issue-updated-last-7days
-      - issue-debug-updated-last-7days
+      - debug-issue-updated-last-7days
+      - issue-zombies
+      - issue-stale-needs-info
 
   - id: feature-requests
     name: Feature Requests
@@ -69,64 +63,33 @@ collections:
       features requests
     rules:
       - issue-fr
-      - issue-debug-fr
+      - debug-issue-fr
 
 rules:
 
   issue-needs-triage:
     name: "Untriaged issues"
-    resolution: "Add to milestone or label (WaitingForInfo or Debug)"
+    resolution: "Add to milestone or add 'WaitingForInfo' label."
     type: issue
     filters:
       - milestone: "Untriaged"
-      - label: "!Debug"
-      - label: "!WaitingForInfo"
-
-  issue-debug-needs-triage:
-    name: "Untriaged issues (debug)"
-    resolution: "Add to milestone"
-    type: issue
-    filters:
-      - milestone: "Untriaged"
-      - label: "Debug"
       - label: "!WaitingForInfo"
 
   issue-needs-response:
     name: "Needs response"
-    resolution: "Respond. For retriage, remove 'WaitingForInfo' label."
+    resolution: "Respond. For retriage, remove 'WaitingForInfo' label and move to 'Untriaged' milestone."
     type: issue
     filters:
       - label: "WaitingForInfo"
-      - label: "!Debug"
       - tag: (recv|recv-q)
       - tag: "!contributor-last"
   
-  issue-debug-needs-response:
-    name: "Needs response (debug)"
-    resolution: "Respond. For retriage, remove 'WaitingForInfo' label."
-    type: issue
-    filters:
-      - label: "WaitingForInfo"
-      - label: "Debug"
-      - tag: (recv|recv-q)
-      - tag: "!contributor-last"
-
   issue-unactionable:
     name: "Unactionable issues"
     resolution: "None"
     type: issue
     filters:
       - label: "WaitingForInfo"
-      - label: "!Debug"
-      - tag: "contributor-last"
-
-  issue-debug-unactionable:
-    name: "Unactionable issues (debug)"
-    resolution: "None"
-    type: issue
-    filters:
-      - label: "WaitingForInfo"
-      - label: "!Debug"
       - tag: "contributor-last"
 
   issue-new-comment:
@@ -134,28 +97,12 @@ rules:
     resolution: "Respond"
     type: issue
     filters:
-      - label: "!Debug"
       - label: "!WaitingForInfo"
       - updated: -7d
       - tag: (recv|recv-q)
       - tag: "!contributor-last"
       - tag: "!assigned"
       - comments: ">1"
-      - updated: -7d
-
-  issue-debug-new-comment:
-    name: "Issue with a new comment (debug)"
-    resolution: "Respond"
-    type: issue
-    filters:
-      - label: "Debug"
-      - label: "!WaitingForInfo"
-      - updated: -7d
-      - tag: (recv|recv-q)
-      - tag: "!contributor-last"
-      - tag: "!assigned"
-      - comments: ">1"
-      - updated: -7d
 
   issue-updated-last-7days:
     name: "Issues touched in the last 7 days"
@@ -165,8 +112,8 @@ rules:
       - updated: -7d
       - label: "!Debug"
 
-  issue-debug-updated-last-7days:
-    name: "Issues touched in the last 7 days (debug)"
+  debug-issue-updated-last-7days:
+    name: "Debug issues touched in the last 7 days"
     resolution: "None"
     type: issue
     filters:
@@ -178,13 +125,33 @@ rules:
     resolution: "None"
     type: issue
     filters:
-      - label: "!Debug"
       - label: "FeatureRequest"
+      - label: "!Debug"
 
-  issue-debug-fr:
-    name: "VS Code feature requests (debug)"
+  debug-issue-fr:
+    name: "VS Code feature requests"
     resolution: "None"
     type: issue
     filters:
-      - label: "Debug"
       - label: "FeatureRequest"
+      - label: "Debug"
+
+  issue-zombies:
+    name: "Screaming into the void"
+    resolution: "Reopen, or ask folks to open a new issue"
+    type: issue
+    filters:
+      - state: closed
+      - comments-while-closed: ">1"
+      - updated: "-14d"
+      - tag: "!member-last"
+
+  # Issues needing closure (before gopherbot)
+  issue-stale-needs-info:
+    name: "WaitingForInfo for over 3 weeks"
+    resolution: "Close or remove WaitingForInfo label"
+    type: issue
+    filters:
+      - label: "WaitingForInfo"
+      - responded: +1w
+      - updated: +21d
