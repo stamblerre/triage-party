@@ -22,7 +22,16 @@ echo "token path: ${GITHUB_TOKEN_PATH}"
 export PROJECT=gopls-triage-party
 export IMAGE=gcr.io/gopls-triage-party/triage-party
 export SERVICE_NAME=teaparty
-export CONFIG_FILE=config/examples/gopls.yaml
+export CONFIG_FILE=config/gopls.yaml
+
+# Copy triage-party into tmp dir, and copy config into correct spot
+readonly clean_repo=$(mktemp -d)
+git clone --depth 1 https://github.com/google/triage-party.git "${clean_repo}"
+cp ./config/gopls.yaml "${clean_repo}"/${CONFIG_FILE}
+cd "${clean_repo}"
+
+docker build -t "${IMAGE}" --build-arg "CFG=./${CONFIG_FILE}" .
+docker push "${IMAGE}" || exit 2
 
 readonly token="$(cat "${GITHUB_TOKEN_PATH}")"
 gcloud beta run deploy "${SERVICE_NAME}" \
